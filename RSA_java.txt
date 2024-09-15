@@ -1,0 +1,57 @@
+import java.math.BigInteger;
+import java.util.Random;
+class temp10{
+public static int publicKey(int phi) {
+Random rd = new Random();
+return rd.nextInt(2, phi);
+}
+public static int privateKey(int e, int phi) {
+for (int i = 2; i < phi; i++) {
+if ((e * i) % phi == 1) {
+return i;
+}
+}
+return 0;
+}
+public static BigInteger encrypt(BigInteger plainText, int e, int n) {
+return plainText.modPow(BigInteger.valueOf(e), BigInteger.valueOf(n));
+}
+public static BigInteger decrypt(BigInteger cipherText, int d, int n) {
+return cipherText.modPow(BigInteger.valueOf(d), BigInteger.valueOf(n));
+}
+public static void main(String[] args) {
+final int p = 17;
+final int q = 197;
+final int n = p * q;
+int message = 88;
+BigInteger cipherText;
+BigInteger cipherSign;
+System.out.println("p: " + p);
+System.out.println("q: " + q);
+final int phi = (p - 1) * (q - 1);
+System.out.println("'phi' is " + phi);
+int eEncrypt = publicKey(phi);
+
+43
+
+int dEncrypt = privateKey(eEncrypt, phi);
+int eSign = publicKey(phi);
+int dSign = privateKey(eSign, phi);
+System.out.println("'eEncrypt' is " + eEncrypt);
+System.out.println("'dEncrypt' is " + dEncrypt);
+System.out.println("'eSign' is " + eSign);
+System.out.println("'dSign' is " + dSign);
+System.out.println("Message: " + message);
+BigInteger bigMessage = BigInteger.valueOf(message);
+cipherText = encrypt(bigMessage, eEncrypt, n);
+cipherSign = encrypt(cipherText, dSign, n);
+System.out.println("CipherText as: " + cipherText);
+System.out.println("CipherSign as: " + cipherSign);
+BigInteger signatureVerify = encrypt(cipherSign, eSign, n);
+if (signatureVerify.equals(cipherText)) {
+System.out.println("Digital signature is authentic.");
+} else {
+System.out.println("Digital signature is not authentic.");
+}
+}
+}
